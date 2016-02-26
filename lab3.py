@@ -1,10 +1,10 @@
 import flask, json
 import requests
 
-SESSION_BACKEND_LOCATION = 'http://127.0.0.1:8001/'
-USERS_BACKEND_LOCATION   = 'http://127.0.0.1:8002/'
-CV_BACKEND_LOCATION      = 'http://127.0.0.1:8003/'
-MEDIA_BACKEND_LOCATION   = 'http://127.0.0.1:8004/'
+SESSION_BACKEND_LOCATION  = 'http://127.0.0.1:8001/'
+USERS_BACKEND_LOCATION    = 'http://127.0.0.1:8002/'
+PROJECTS_BACKEND_LOCATION = 'http://127.0.0.1:8003/'
+MEDIA_BACKEND_LOCATION    = 'http://127.0.0.1:8004/'
 
 
 def _request_get(host, url, request):
@@ -146,7 +146,20 @@ def run_server():
 
 	@app.route("/me", methods=["GET"])
 	def get_me():
-		return
+		user_id = None
+		try:
+			user_id = check_session()
+		except RuntimeError:
+			return 'Session service temporary unavailable'
+		if user_id is None:
+			return flask.redirect('/login?url=/me')
+
+		response, code = _request_get(USERS_BACKEND_LOCATION, 'users/{}'.format(user_id), {'user_id': user_id})
+		print(response)
+		if code == 200:
+			return flask.render_template("me.html", name = response['user']['name'], email=response['user']['email'] ,description=response['user']['description'])
+
+		flask.abort(503)
 
 	@app.route("/cv", methods=["GET"])
 	def get_cv():
@@ -167,10 +180,6 @@ def run_server():
 	@app.route("/project", methods=["GET"])
 	def get_project():
 		return
-
-	@app.route("/me", methods=["DELETE"])
-	def delete_me():
-		return post_me_delete()
 
 	@app.route("/search", methods=["GET"])
 	def get_serach():
