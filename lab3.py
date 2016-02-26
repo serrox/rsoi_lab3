@@ -157,7 +157,8 @@ def run_server():
 		response, code = _request_get(USERS_BACKEND_LOCATION, 'users/{}'.format(user_id), {'user_id': user_id})
 		print(response)
 		if code == 200:
-			return flask.render_template("me.html", name = response['user']['name'], email=response['user']['email'] ,description=response['user']['description'])
+			return flask.render_template("me.html", name = response['user']['name'], email=response['user']['email'] ,description=response['user']['description'],
+				cv_name = response['CV']['name'], Profession = response['CV']['profession'])
 
 		flask.abort(503)
 

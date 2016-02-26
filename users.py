@@ -7,22 +7,32 @@ def run():
 
 	@app.route('/users/<id>', methods=['GET'])
 	def users_get_by_id(id):
-		q = "SELECT email, name, description, cv FROM users WHERE id = '" + id + "'"
+		q = "SELECT email, name, description, cv_id FROM users WHERE id = '" + id + "'"
 		query_result = db.exec_query(q).fetchone()
 
 		if not query_result:
 			flask.abort(404)
 
-		
+		q = "SELECT name, profession, projects_id, videos_id, records_id, photos_id FROM CVs WHERE cv_id = '" + str(query_result[3]) + "'"
+		r = db.exec_query(q).fetchone()
 		
 		user = {
 			'id': id,
 			'email': query_result[0],
 			'name': query_result[1],
-			'description': query_result[2],
+			'description': query_result[2]
 		}
 
-		return json.dumps({'user': user}), 200
+		CV = {
+			'name' : r[0],
+			'profession' : r[1],
+			'projects' : json.loads(r[2]),
+			'videos' : json.loads(r[3]),
+			'records' : json.loads(r[4]),
+			'photos' : json.loads(r[5])
+		}
+
+		return json.dumps({'user': user, "CV" : CV}), 200
 
 	@app.route('/users', methods=['POST'])
 	def users_post():
