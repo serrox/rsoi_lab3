@@ -1,0 +1,24 @@
+<meta charset="utf-8">
+
+<title>Main Page</title>
+
+<html>
+<body>
+    <h1>MAIN PAGE</h1>
+    {% if server_error %}
+        <div>Session Service Unavailable</div><br/><hr/>
+    {% endif %}
+    {% if session %}
+        <a href="/me">About me</a>
+        <form method="post">
+            <div style="margin-top:5px">
+                <input type="submit" name="LogOutButton" value="Log Out">
+            </div>
+        </form>
+    {% else %}
+    <span><a href="/login">Sign In</a></span>
+    <span><a href="/registration">Sign Up</a></span>
+    <hr/>
+    {% endif %}
+</body>
+</html>
