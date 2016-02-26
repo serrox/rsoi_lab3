@@ -6,7 +6,7 @@ def run():
 	app = flask.Flask(__name__)
 
 	@app.route('/users/<id>', methods=['GET'])
-	def users_get_by_id(id):
+	def get_user(id):
 		q = "SELECT email, name, description, cv_id FROM users WHERE id = '" + id + "'"
 		query_result = db.exec_query(q).fetchone()
 
@@ -23,16 +23,37 @@ def run():
 			'description': query_result[2]
 		}
 
-		CV = {
+		if not r:
+			CV = {}
+		else:
+			CV = {
+				'name' : r[0],
+				'profession' : r[1],
+				'projects' : json.loads(r[2]),
+				'videos' : json.loads(r[3]),
+				'records' : json.loads(r[4]),
+				'photos' : json.loads(r[5])
+			}
+
+		return json.dumps({'user': user, "CV" : CV}), 200
+
+	@app.route('/cv/<id>', methods=['GET'])
+	def get_cv(id):
+		q = "SELECT name, profession, projects_id, videos_id, records_id, photos_id, image FROM CVs WHERE cv_id = '" + id + "'"
+		r = db.exec_query(q).fetchone()
+
+		if not r:
+			flask.abort(404)
+
+		return json.dumps({
 			'name' : r[0],
 			'profession' : r[1],
 			'projects' : json.loads(r[2]),
 			'videos' : json.loads(r[3]),
 			'records' : json.loads(r[4]),
-			'photos' : json.loads(r[5])
-		}
-
-		return json.dumps({'user': user, "CV" : CV}), 200
+			'photos' : json.loads(r[5]),
+			'image' : r[6]
+		}), 200
 
 	@app.route('/users', methods=['POST'])
 	def users_post():

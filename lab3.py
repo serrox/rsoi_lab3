@@ -155,7 +155,6 @@ def run_server():
 			return flask.redirect('/login?url=/me')
 
 		response, code = _request_get(USERS_BACKEND_LOCATION, 'users/{}'.format(user_id), None)
-		print(response)
 
 		if code == 200:
 			proj = []
@@ -168,8 +167,19 @@ def run_server():
 
 		flask.abort(503)
 
-	@app.route("/cv", methods=["GET"])
-	def get_cv():
+	@app.route("/cv/<id>", methods=["GET"])
+	def get_cv(id):
+		response, code = _request_get(USERS_BACKEND_LOCATION, 'cv/{}'.format(id), None)
+		print(response)
+
+		if code == 200:
+			proj = []
+			for p in response['projects']:
+				r, code = _request_get(PROJECTS_BACKEND_LOCATION, 'project/{}'.format(p), None)
+				if code == 200:
+					proj.append({'id' : p, 'name' : r['name']})
+			return flask.render_template("cv.html",
+				name = response['name'], Profession = response['profession'], image = response['image'], projects = proj)
 		return
 
 	@app.route("/photo", methods=["GET"])

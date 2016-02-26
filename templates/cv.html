@@ -1,0 +1,21 @@
+<meta charset="utf-8">
+
+<title>CV</title>
+
+<html>
+<body>
+    <a href="/">to main</a>
+    <h1>CV</h1>
+	{% if image != 'null' %}
+	<!--<img src="-->{{image}}<!--"></img>-->
+	{% endif %}
+	<h2>Name:</h2>
+	<div>{{ cv_name }}</div>
+	<h2>Profession:</h2>
+	<div>{{ Profession }}</div>
+	<h2>Projects: </h2>
+    {% for p in projects %}
+		<div>{{p['name']}}</div>
+    {% endfor %}
+</body>
+</html>
