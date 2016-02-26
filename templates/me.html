@@ -18,5 +18,9 @@
 	<div>{{ cv_name }}</div>
 	<h4>Profession:</h4>
 	<div>{{ Profession }}</div>
+	<h4>Projects: </h4>
+    {% for p in projects %}
+		<div>{{p['name']}}</div>
+    {% endfor %}
 </body>
 </html>

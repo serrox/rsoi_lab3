@@ -154,11 +154,17 @@ def run_server():
 		if user_id is None:
 			return flask.redirect('/login?url=/me')
 
-		response, code = _request_get(USERS_BACKEND_LOCATION, 'users/{}'.format(user_id), {'user_id': user_id})
+		response, code = _request_get(USERS_BACKEND_LOCATION, 'users/{}'.format(user_id), None)
 		print(response)
+
 		if code == 200:
+			proj = []
+			for p in response['CV']['projects']:
+				r, code = _request_get(PROJECTS_BACKEND_LOCATION, 'project/{}'.format(p), None)
+				if code == 200:
+					proj.append({'id' : p, 'name' : r['name']})
 			return flask.render_template("me.html", name = response['user']['name'], email=response['user']['email'] ,description=response['user']['description'],
-				cv_name = response['CV']['name'], Profession = response['CV']['profession'])
+				cv_name = response['CV']['name'], Profession = response['CV']['profession'], projects = proj)
 
 		flask.abort(503)
 
